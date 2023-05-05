@@ -1,44 +1,64 @@
 const express = require('express')
+//导入加密解密包
+const cryp = require('./utils/cryp')
 //清空终端
 console.log('\n\n\n\n')
 //连接mysql
 const mysql = require('./database/mysql-gis')
 const app = express()
 
-// 导入依赖包(将请求参数转化为json)
-const parser = require('body-parser')
-app.use(parser.json())
-// app.use(express.urlencoded({ extended: false }))
+const bodyParser = require('body-parser')
 
-/*为app添加中间件处理跨域请求*/
-app.use(function (req, res, next) {
+//跨域
+const acct = (req, res, next) => {
 	res.header('Access-Control-Allow-Origin', '*')
 	res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS')
-	res.header('Access-Control-Allow-Headers', 'XMLHttpRequest')
-	res.header('Access-Control-Allow-Headers', 'Content-Type')
+	res.header('Access-Control-Allow-Headers', '*')
+	// res.header('Access-Control-Allow-Headers', 'Content-Type')
 	next()
-})
+}
 
 //日志
 const logger = (req, res, next) => {
 	console.log('\n')
-	console.log('logger --->')
+	console.log('log 接收到请求--->')
 	console.log('请求地址: ' + req.url)
 	console.log('请求方法: ' + req.method)
-	console.log('\n')
 	next()
 }
-app.use(logger)
+
+//挂载
+app.use(acct).use(bodyParser.urlencoded({ extended: false })).use(bodyParser.json()).use(logger)
+
+const serve = {
+	user: require('./userServe/user')
+}
+
+let request = require('./utils/request')
 
 // 监听
 app.post('/', (req, res) => {
+	let body = JSON.parse(cryp.decryptFunc(req.body.data))
+	console.log('接收到参数并解密--->')
+	console.log(body)
+	let fun = String(body.method).split('.')
+	// 
+	if(serve[fun[0]] && serve[fun[0]][fun[1]])
+	{
+		console.log('开始业务操作----'+fun[0]+'----'+fun[1]+ '------>')
+		let result = serve[fun[0]][fun[1]](body.data)
+		res.send(result)
+	}
+	else {
+		res.send(request.error('未找到方法'))
+	}
+	
 	// mysql.executeSQL('select * from user').then(res => {
 	// 	console.log(res)
 	// }).catch(e => {
 	// 	console.log(e)
 	// })
 	
-	res.send({})
 })
 
 // 监听3300端口
