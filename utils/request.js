@@ -1,24 +1,35 @@
+//导入加密解密包
+const cryp = require('../utils/cryp')
 let request = {
     success: (data = {}, msg = '成功') => {
-        return {
+        let requst = {
             status: 200,
             msg: msg,
             data: data
         }
+        console.log('返回----->')
+        console.log(requst)
+        return cryp.encryptFunc(JSON.stringify(requst))
     },
 	error: (msg = '失败') => {
-        return {
+        let requst = {
             status: 500,
             msg: msg,
             data: {}
         }
+        console.log('返回----->')
+        console.log(requst)
+        return cryp.encryptFunc(JSON.stringify(requst))
     },
     other: (data, msg, status) => {
-        return {
+        let requst = {
             status: status,
             msg: msg,
             data: data
         }
+        console.log('返回----->')
+        console.log(requst)
+        return cryp.encryptFunc(JSON.stringify(requst))
     }
 }
 module.exports = request

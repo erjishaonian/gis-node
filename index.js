@@ -7,6 +7,8 @@ console.log('\n\n\n\n')
 const mysql = require('./database/mysql-gis')
 const app = express()
 
+const path = require('path')
+
 const bodyParser = require('body-parser')
 
 //跨域
@@ -31,36 +33,37 @@ const logger = (req, res, next) => {
 app.use(acct).use(bodyParser.urlencoded({ extended: false })).use(bodyParser.json()).use(logger)
 
 const serve = {
-	user: require('./userServe/user')
+	user: require('./serve/userServe/user'),
+	map: require('./serve/mapServe/map'),
+	farm: require('./serve/farmServe/farm')
 }
 
 let request = require('./utils/request')
 
+app.use(express.static(path.join(__dirname, './serve/userServe/img')));
 // 监听
 app.post('/', (req, res) => {
 	let body = JSON.parse(cryp.decryptFunc(req.body.data))
 	console.log('接收到参数并解密--->')
 	console.log(body)
 	let fun = String(body.method).split('.')
+	
 	// 
 	if(serve[fun[0]] && serve[fun[0]][fun[1]])
 	{
 		console.log('开始业务操作----'+fun[0]+'----'+fun[1]+ '------>')
-		let result = serve[fun[0]][fun[1]](body.data)
-		res.send(result)
+		serve[fun[0]][fun[1]](body.data).then(result=> {
+			res.send(result)
+		})
+		
+		
 	}
 	else {
 		res.send(request.error('未找到方法'))
 	}
 	
-	// mysql.executeSQL('select * from user').then(res => {
-	// 	console.log(res)
-	// }).catch(e => {
-	// 	console.log(e)
-	// })
 	
 })
-
 // 监听3300端口
 app.listen(3300, () => {
 	console.log('\n\n\n\n\n\n\n\n\n\n\n\n\n\n')

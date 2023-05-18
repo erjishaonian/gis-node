@@ -17,6 +17,7 @@ smtpTransport = nodemailer.createTransport({
  */
 var sendMail = function(recipient, subject, html) {
     return new Promise((resolve, reject) => {
+        console.log('向' + recipient + '发送验证码')
         smtpTransport.sendMail({
             from: '1593916507@qq.com',
             to: recipient,
