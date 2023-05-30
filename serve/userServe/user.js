@@ -23,6 +23,7 @@ let userServe = {
                         username,
                         role
                     }
+                    userSQL.updateLastLoginByEmail(req)
                     resolve(request.success(user))
                 }
                 else {
@@ -122,7 +123,9 @@ let userServe = {
                         district,
                         wx,
                         qq,
-                        role
+                        role,
+                        last_login,
+                        create_time
                     } = res[0]
                     let user = {
                         email,
@@ -138,7 +141,9 @@ let userServe = {
                         district,
                         wx,
                         qq,
-                        role
+                        role,
+                        last_login,
+                        create_time
                     }
                     resolve(request.success(user))
                 }
@@ -156,14 +161,15 @@ let userServe = {
             if (req.saveImg) {
                 const base64Data = req.img
                 const binaryData = Buffer.from(base64Data, 'base64')
-                const filePath = path.join('./serve/userServe/img', req.email + '.jpg')
+                const fileName = req.email + '-' + (new Date().getTime()) + '.jpg'
+                const filePath = path.join('./serve/userServe/img', fileName)
                 const base64Image = base64Data.split(';base64,').pop();
                 fs.writeFile(filePath, base64Image, { encoding: 'base64' }, (err) => {
                     if (err) {
                         console.error(err);
                         resolve(request.other({}, '头像保存失败！', 550))
                     } else {
-                        const fileUrl = `http://localhost:3300/` + req.email + `.jpg`
+                        const fileUrl = `http://localhost:3300/` + fileName
                         req.img = fileUrl
                         userSQL.update(req).then(res => {
                             resolve(request.success())

@@ -8,7 +8,8 @@ let request = {
             data: data
         }
         console.log('返回----->')
-        console.log(requst)
+        // console.log(requst)
+        console.log('[obejct]')
         return cryp.encryptFunc(JSON.stringify(requst))
     },
 	error: (msg = '失败') => {

@@ -4,7 +4,7 @@ const mysql = require('../../database/mysql-gis')
 const sqlActive = (sql) => {
     return new Promise((resolve, reject) => {
         mysql.executeSQL(sql).then(res => {
-            console.log(res)
+            // console.log(res)
             resolve(res)
         }).catch(e => {
             console.log(e)

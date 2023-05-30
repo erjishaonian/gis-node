@@ -4,7 +4,7 @@ const mysql = require('../../database/mysql-gis')
 const sqlActive = (sql) => {
     return new Promise((resolve, reject) => {
         mysql.executeSQL(sql).then(res => {
-            console.log(res)
+            // console.log(res)
             resolve(res)
         }).catch(e => {
             console.log(e)
@@ -23,13 +23,23 @@ const userSQL = {
         return sqlActive(sql)
         
     },
+    updateLastLoginByEmail: (req) => {
+        let sql = `UPDATE user SET last_login = NOW() WHERE email = '`+ req.email +`'`
+        return sqlActive(sql)
+    },
     selectByEmail : (req) => { 
         let sql = `SELECT * FROM user WHERE
         user.email = '` + req.email + `'`
         console.log('执行sql语句------>')
         // console.log(sql)
-        return sqlActive(sql)
-        
+        return sqlActive(sql) 
+    },
+    selectById : (id) => { 
+        let sql = `SELECT * FROM user WHERE
+        user.id = '` + id + `'`
+        console.log('执行sql语句------>')
+        // console.log(sql)
+        return sqlActive(sql) 
     },
     updateCode : (req) => {
         let sql = `UPDATE user SET code = '`+ req.code+`' WHERE email = '`+ req.email +`'`
@@ -69,6 +79,10 @@ const userSQL = {
             `WHERE email = '`+ req.email +`'`
             console.log(sql)
             
+        return sqlActive(sql)
+    },
+    updateRole: (req) => {
+        let sql = `UPDATE user SET role = '`+ req.role+`' WHERE email = '`+ req.email + `'`
         return sqlActive(sql)
     }
 }

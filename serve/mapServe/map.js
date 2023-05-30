@@ -15,10 +15,10 @@ let mapServe = {
                     //先获取所有地区的code
                     const allJson = require('../../json/map/all.json')
                     for (let i = 0; i < allJson.length; i++) {
-                        if (allJson[i].level = 'district' && String(allJson[i].name).includes(req.district)) {
+                        if (allJson[i].level === 'district' && String(allJson[i].name).includes(req.district)) {
                             //确认父级是否正确
                             for (let n = 0; n < allJson.length; n++) {
-                                if (allJson[n].level = 'city' && allJson[n].adcode === allJson[i].parent && String(allJson[n].name).includes(req.city)) {
+                                if (allJson[n].level === 'city' && allJson[n].adcode === allJson[i].parent && String(allJson[n].name).includes(req.city)) {
                                     //adcode, lng:126, lat: 44, name
                                     axios.get('https://geo.datav.aliyun.com/areas_v3/bound/geojson?code=' + allJson[i].adcode).then(res => {
                                         console.log(res.data)
